@@ -27,6 +27,7 @@ class Config:
     slot: str
     dry_run: bool
     now: datetime
+    trigger: str
 
 
 def parse_args() -> Config:
@@ -52,6 +53,7 @@ def parse_args() -> Config:
         slot=args.slot,
         dry_run=args.dry_run,
         now=now,
+        trigger=os.getenv("TRIGGER_NAME") or os.getenv("GITHUB_EVENT_NAME") or "local",
     )
 
 

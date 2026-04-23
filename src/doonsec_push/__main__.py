@@ -28,7 +28,7 @@ def main() -> int:
         send_markdown(config.dingtalk_webhook, config.dingtalk_secret, markdown)
 
     if not config.dry_run:
-        apply_successful_run(state, slot, result)
+        apply_successful_run(state, slot, result, trigger=config.trigger, started_at=config.now)
         save_state(config.state_file, state)
 
     summary = {
@@ -38,6 +38,7 @@ def main() -> int:
         "window_end": result.window.end.isoformat(),
         "classified_count": len(result.classified),
         "sent_count": len(result.sent_ids),
+        "trigger": config.trigger,
     }
     print(json.dumps(summary, ensure_ascii=False))
     if markdown:

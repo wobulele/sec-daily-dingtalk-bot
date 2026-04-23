@@ -28,7 +28,14 @@ def test_first_run_only_sends_current_window_articles() -> None:
         Article("Flowise fetch-links ssrf漏洞", "https://mp.weixin.qq.com/s/new", "测试安全", datetime(2026, 4, 23, 9, 39, tzinfo=SHANGHAI_TZ)),
     ]
     window = calculate_window(Slot.MORNING, datetime(2026, 4, 23, 9, 40, tzinfo=SHANGHAI_TZ))
-    state = State(version=1, initialized=False, seen_ids=[], sent_ids=[], last_successful_windows={Slot.MORNING: None, Slot.AFTERNOON: None})
+    state = State(
+        version=1,
+        initialized=False,
+        seen_ids=[],
+        sent_ids=[],
+        last_successful_windows={Slot.MORNING: None, Slot.AFTERNOON: None},
+        last_runs={Slot.MORNING: None, Slot.AFTERNOON: None},
+    )
 
     result = select_articles_for_window(articles, window, state)
 
@@ -40,7 +47,14 @@ def test_first_run_only_sends_current_window_articles() -> None:
 
 def test_render_markdown_groups_articles_by_category() -> None:
     window = calculate_window(Slot.MORNING, datetime(2026, 4, 23, 9, 40, tzinfo=SHANGHAI_TZ))
-    state = State(version=1, initialized=True, seen_ids=[], sent_ids=[], last_successful_windows={Slot.MORNING: None, Slot.AFTERNOON: None})
+    state = State(
+        version=1,
+        initialized=True,
+        seen_ids=[],
+        sent_ids=[],
+        last_successful_windows={Slot.MORNING: None, Slot.AFTERNOON: None},
+        last_runs={Slot.MORNING: None, Slot.AFTERNOON: None},
+    )
     articles = [
         build_article(9, 30, "Flowise fetch-links ssrf漏洞", link_suffix="vuln"),
         build_article(9, 31, "WolfShell内存级WebShell管理工具", link_suffix="tool"),
@@ -53,13 +67,35 @@ def test_render_markdown_groups_articles_by_category() -> None:
 
 
 def test_apply_successful_run_updates_state() -> None:
-    state = State(version=1, initialized=False, seen_ids=[], sent_ids=[], last_successful_windows={Slot.MORNING: None, Slot.AFTERNOON: None})
+    state = State(
+        version=1,
+        initialized=False,
+        seen_ids=[],
+        sent_ids=[],
+        last_successful_windows={Slot.MORNING: None, Slot.AFTERNOON: None},
+        last_runs={Slot.MORNING: None, Slot.AFTERNOON: None},
+    )
     articles = [build_article(9, 35, "Flowise fetch-links ssrf漏洞", link_suffix="vuln")]
     window = calculate_window(Slot.MORNING, datetime(2026, 4, 23, 9, 40, tzinfo=SHANGHAI_TZ))
     result = select_articles_for_window(articles, window, state)
 
-    apply_successful_run(state, Slot.MORNING, result)
+    apply_successful_run(
+        state,
+        Slot.MORNING,
+        result,
+        trigger="workflow_dispatch",
+        started_at=datetime(2026, 4, 23, 9, 41, tzinfo=SHANGHAI_TZ),
+    )
 
     assert state.initialized is True
     assert "https://mp.weixin.qq.com/s/vuln" in state.sent_ids
     assert state.last_successful_windows["morning"]["end"] == "2026-04-23T09:40:00+08:00"
+    assert state.last_runs["morning"] == {
+        "trigger": "workflow_dispatch",
+        "dry_run": False,
+        "started_at": "2026-04-23T09:41:00+08:00",
+        "window_start": "2026-04-22T16:05:00+08:00",
+        "window_end": "2026-04-23T09:40:00+08:00",
+        "classified_count": 1,
+        "sent_count": 2,
+    }

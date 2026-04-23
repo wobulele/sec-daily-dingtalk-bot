@@ -53,6 +53,7 @@ jobs:
           MINIMAX_BASE_URL: ${{ vars.MINIMAX_BASE_URL }}
           RSS_URL: ${{ vars.RSS_URL }}
           STATE_FILE: data/sent_state.json
+          TRIGGER_NAME: ${{ github.event_name }}
         shell: bash
         run: |
           SLOT="auto"

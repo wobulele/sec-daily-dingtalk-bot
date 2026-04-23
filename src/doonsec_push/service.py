@@ -78,7 +78,13 @@ def select_articles_for_window(
     )
 
 
-def apply_successful_run(state: State, slot: Slot, result: RunResult) -> None:
+def apply_successful_run(
+    state: State,
+    slot: Slot,
+    result: RunResult,
+    trigger: str = "local",
+    started_at: datetime | None = None,
+) -> None:
     seen = set(state.seen_ids)
     sent = set(state.sent_ids)
 
@@ -96,6 +102,15 @@ def apply_successful_run(state: State, slot: Slot, result: RunResult) -> None:
     state.last_successful_windows[slot] = {
         "start": result.window.start.isoformat(),
         "end": result.window.end.isoformat(),
+    }
+    state.last_runs[slot] = {
+        "trigger": trigger,
+        "dry_run": False,
+        "started_at": (started_at or datetime.now(tz=SHANGHAI_TZ)).astimezone(SHANGHAI_TZ).isoformat(),
+        "window_start": result.window.start.isoformat(),
+        "window_end": result.window.end.isoformat(),
+        "classified_count": len(result.classified),
+        "sent_count": len(result.sent_ids),
     }
 
 

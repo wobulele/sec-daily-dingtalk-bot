@@ -17,6 +17,7 @@ class State:
     seen_ids: list[str]
     sent_ids: list[str]
     last_successful_windows: dict[str, dict[str, str] | None]
+    last_runs: dict[str, dict[str, object] | None]
 
 
 def load_state(path: str) -> State:
@@ -28,6 +29,7 @@ def load_state(path: str) -> State:
             seen_ids=[],
             sent_ids=[],
             last_successful_windows={Slot.MORNING: None, Slot.AFTERNOON: None},
+            last_runs={Slot.MORNING: None, Slot.AFTERNOON: None},
         )
 
     payload = json.loads(state_path.read_text(encoding="utf-8"))
@@ -40,6 +42,7 @@ def load_state(path: str) -> State:
             "last_successful_windows",
             {Slot.MORNING: None, Slot.AFTERNOON: None},
         ),
+        last_runs=payload.get("last_runs", {Slot.MORNING: None, Slot.AFTERNOON: None}),
     )
 
 
@@ -52,9 +55,9 @@ def save_state(path: str, state: State) -> None:
         "seen_ids": state.seen_ids[-MAX_IDS:],
         "sent_ids": state.sent_ids[-MAX_IDS:],
         "last_successful_windows": state.last_successful_windows,
+        "last_runs": state.last_runs,
     }
     state_path.write_text(
         json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
-
