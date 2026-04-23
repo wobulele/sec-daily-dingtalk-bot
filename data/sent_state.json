@@ -419,13 +419,33 @@
     "https://mp.weixin.qq.com/s/G8jiY0Er-VJnZAJNUhyEew",
     "f691670439748b1805bc83c370f139b3a021993ea65e8ad38e63b5d4bc2c0175",
     "https://mp.weixin.qq.com/s/iffTZZTdSJ5PMXoY29H-xw",
-    "dc9c40ef7ddca0824412b7a6a4e02742556eb0873035410f35cda2ba013432e1"
+    "dc9c40ef7ddca0824412b7a6a4e02742556eb0873035410f35cda2ba013432e1",
+    "https://mp.weixin.qq.com/s/hC6IbVi8QwDVChqsscnkng",
+    "a672d6d38f0fc2e800855ea2288901fe7599b7945253a7ae05d6e256a82f0c11",
+    "https://mp.weixin.qq.com/s/0k-iqZU7YNhsmrp0pDRRnA",
+    "44cf192d3a8a83eae212ec1367bf3e04472aaed6288ec6413e6c9c6adb95a0dd",
+    "https://mp.weixin.qq.com/s/IEGyBM6pFxERsvZRx2enRg",
+    "dc2f29ad6ef53ec5396be926afb6f7528f3656bbecfd97608a63ddc89b3dc1a0",
+    "https://mp.weixin.qq.com/s/_YADlU74XVyji4en3Fa3oA",
+    "cd6db7870c15e47295926d5875832e41776701487b61ce17e5bac89f6da5e86f"
   ],
   "last_successful_windows": {
     "morning": null,
     "afternoon": {
       "start": "2026-04-23T09:40:00+08:00",
       "end": "2026-04-23T16:05:00+08:00"
+    }
+  },
+  "last_runs": {
+    "morning": null,
+    "afternoon": {
+      "trigger": "schedule",
+      "dry_run": false,
+      "started_at": "2026-04-23T17:48:40.396978+08:00",
+      "window_start": "2026-04-23T09:40:00+08:00",
+      "window_end": "2026-04-23T16:05:00+08:00",
+      "classified_count": 4,
+      "sent_count": 8
     }
   }
 }
