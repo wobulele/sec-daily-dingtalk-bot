@@ -30,10 +30,10 @@ def calculate_window(slot: Slot, anchor: datetime) -> Window:
     current = anchor.astimezone(SHANGHAI_TZ)
     if slot == Slot.MORNING:
         end = current.replace(hour=9, minute=40, second=0, microsecond=0)
-        start = (end - timedelta(days=1)).replace(hour=16, minute=20, second=0, microsecond=0)
+        start = (end - timedelta(days=1)).replace(hour=16, minute=5, second=0, microsecond=0)
         return Window(start=start, end=end)
 
-    end = current.replace(hour=16, minute=20, second=0, microsecond=0)
+    end = current.replace(hour=16, minute=5, second=0, microsecond=0)
     start = current.replace(hour=9, minute=40, second=0, microsecond=0)
     return Window(start=start, end=end)
 

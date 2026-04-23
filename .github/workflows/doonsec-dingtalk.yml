@@ -3,7 +3,7 @@ name: Doonsec DingTalk Push
 on:
   schedule:
     - cron: "40 1 * * *"
-    - cron: "20 8 * * *"
+    - cron: "05 8 * * *"
   workflow_dispatch:
     inputs:
       slot:
@@ -59,7 +59,7 @@ jobs:
           if [[ "${{ github.event_name }}" == "schedule" ]]; then
             if [[ "${{ github.event.schedule }}" == "40 1 * * *" ]]; then
               SLOT="morning"
-            elif [[ "${{ github.event.schedule }}" == "20 8 * * *" ]]; then
+            elif [[ "${{ github.event.schedule }}" == "05 8 * * *" ]]; then
               SLOT="afternoon"
             fi
           else

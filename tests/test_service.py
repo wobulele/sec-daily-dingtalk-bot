@@ -18,7 +18,7 @@ def build_article(hour: int, minute: int, title: str, author: str = "测试作�
 def test_calculate_morning_window_spans_previous_afternoon() -> None:
     anchor = datetime(2026, 4, 23, 9, 40, tzinfo=SHANGHAI_TZ)
     window = calculate_window(Slot.MORNING, anchor)
-    assert window.start.isoformat() == "2026-04-22T16:20:00+08:00"
+    assert window.start.isoformat() == "2026-04-22T16:05:00+08:00"
     assert window.end.isoformat() == "2026-04-23T09:40:00+08:00"
 
 

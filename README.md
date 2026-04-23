@@ -1,6 +1,6 @@
 # 洞见网安 RSS 分类推送到钉钉
 
-按北京时间 `09:40` 和 `16:20` 抓取 [Doonsec RSS](https://wechat.doonsec.com/rss.xml)，筛选网安相关文章，按分类整理后通过钉钉群机器人发送。
+按北京时间 `09:40` 和 `16:05` 抓取 [Doonsec RSS](https://wechat.doonsec.com/rss.xml)，筛选网安相关文章，按分类整理后通过钉钉群机器人发送。
 
 ## 功能
 
