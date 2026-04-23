@@ -96,6 +96,16 @@ VULNERABILITY_KEYWORDS = {
     "远程代码执行",
     "exploit",
 }
+OFFENSIVE_OVERRIDE_KEYWORDS = {
+    "漏洞挖掘",
+    "漏洞案例",
+    "漏洞复盘",
+    "漏洞利用",
+    "漏洞赏金",
+    "静态网站中存在",
+    "src",
+    "众测",
+}
 OFFENSIVE_KEYWORDS = {
     "渗透",
     "红队",
@@ -108,6 +118,7 @@ OFFENSIVE_KEYWORDS = {
     "代码审计",
     "后渗透",
     "溯源",
+    "挖掘",
 }
 TOOLS_KEYWORDS = {
     "工具",
@@ -121,6 +132,8 @@ TOOLS_KEYWORDS = {
     "架构实践",
     "宝典",
     "浏览器保存的登录密码",
+    "助手",
+    "问题解决",
 }
 AI_SECURITY_KEYWORDS = {
     "ai",
@@ -130,6 +143,7 @@ AI_SECURITY_KEYWORDS = {
     "agent",
     "提示词",
     "模型",
+    "mythos",
 }
 AI_SECURITY_GUARD_KEYWORDS = {
     "安全",
@@ -170,6 +184,9 @@ RESEARCH_KEYWORDS = {
     "综述",
     "数据库",
     "题库",
+    "证书",
+    "袪魅",
+    "祛魅",
 }
 
 SECURITY_CONTEXT_KEYWORDS = THREAT_KEYWORDS | VULNERABILITY_KEYWORDS | OFFENSIVE_KEYWORDS | TOOLS_KEYWORDS | {
@@ -274,6 +291,14 @@ def classify_article(article: Article, minimax_client: MiniMaxClient | None = No
         if any(keyword in title for keyword in AI_SECURITY_GUARD_KEYWORDS) or "安全" in author:
             return ClassificationDecision(True, Category.AI_SECURITY, "ai-security-keyword")
 
+    for keyword in OFFENSIVE_OVERRIDE_KEYWORDS:
+        if keyword in title:
+            return ClassificationDecision(True, Category.OFFENSIVE, "offensive-override-keyword")
+
+    for keyword in OFFENSIVE_KEYWORDS:
+        if keyword in title:
+            return ClassificationDecision(True, Category.OFFENSIVE, "offensive-keyword")
+
     for keyword in VULNERABILITY_KEYWORDS:
         if keyword in title:
             return ClassificationDecision(True, Category.VULNERABILITY, "vulnerability-keyword")
@@ -281,10 +306,6 @@ def classify_article(article: Article, minimax_client: MiniMaxClient | None = No
     for keyword in THREAT_KEYWORDS:
         if keyword in title:
             return ClassificationDecision(True, Category.THREAT_INTEL, "threat-keyword")
-
-    for keyword in OFFENSIVE_KEYWORDS:
-        if keyword in title:
-            return ClassificationDecision(True, Category.OFFENSIVE, "offensive-keyword")
 
     for keyword in TOOLS_KEYWORDS:
         if keyword in title:

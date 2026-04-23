@@ -38,3 +38,33 @@ def test_classifier_drops_generic_ai_procurement_articles() -> None:
 def test_classifier_does_not_keep_irrelevant_title_only_because_author_looks_security_related() -> None:
     decision = classify_article(build_article("中国氢能“十五五”迎来爆发拐点", author="网络安全直通车"))
     assert decision.keep is False
+
+
+def test_classifier_routes_vulnerability_mining_to_offensive_practice() -> None:
+    decision = classify_article(build_article("记一次某大学的漏洞挖掘"))
+    assert decision.keep is True
+    assert decision.category == Category.OFFENSIVE
+
+
+def test_classifier_routes_static_site_vulnerability_case_to_offensive_practice() -> None:
+    decision = classify_article(build_article("静态网站中存在的 20 多个漏洞"))
+    assert decision.keep is True
+    assert decision.category == Category.OFFENSIVE
+
+
+def test_classifier_keeps_security_certification_knowledge() -> None:
+    decision = classify_article(build_article("网络安全含金量最高的四个证书详细图解！"))
+    assert decision.keep is True
+    assert decision.category == Category.RESEARCH
+
+
+def test_classifier_keeps_mythos_opinion_article() -> None:
+    decision = classify_article(build_article("Mythos正在袪魅？"))
+    assert decision.keep is True
+    assert decision.category == Category.AI_SECURITY
+
+
+def test_classifier_keeps_ai_assistant_tool_article() -> None:
+    decision = classify_article(build_article("OpenClaw 适配普通人的纯免费Ai助手 | 家庭版介绍— 由浅到深的问题解决"))
+    assert decision.keep is True
+    assert decision.category == Category.AI_SECURITY
