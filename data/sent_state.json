@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "initialized": false,
+  "seen_ids": [],
+  "sent_ids": [],
+  "last_successful_windows": {
+    "morning": null,
+    "afternoon": null
+  }
+}
+
