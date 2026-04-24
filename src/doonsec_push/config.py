@@ -65,7 +65,7 @@ def resolve_slot(now: datetime, requested_slot: str) -> tuple[Slot, datetime]:
 
     current = now.astimezone(SHANGHAI_TZ)
     morning_cutoff = current.replace(hour=9, minute=40, second=0, microsecond=0)
-    afternoon_cutoff = current.replace(hour=16, minute=5, second=0, microsecond=0)
+    afternoon_cutoff = current.replace(hour=16, minute=0, second=0, microsecond=0)
 
     if current >= afternoon_cutoff:
         return Slot.AFTERNOON, current
