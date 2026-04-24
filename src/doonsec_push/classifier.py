@@ -62,7 +62,7 @@ DROP_KEYWORDS = {
     "数据库说明",
 }
 
-NON_SECURITY_AI_KEYWORDS = {"融资", "采购", "算力", "支付", "招聘", "服务项目", "采购大模型", "采购智能体"}
+NON_SECURITY_AI_KEYWORDS = {"融资", "算力", "支付", "招聘", "服务项目"}
 THREAT_KEYWORDS = {
     "apt",
     "勒索",
@@ -143,6 +143,10 @@ TOOLS_KEYWORDS = {
     "知识库",
     "架构实践",
     "宝典",
+    "bof",
+    "插件",
+    "发布",
+    "自研",
     "浏览器保存的登录密码",
     "助手",
     "问题解决",
@@ -159,6 +163,8 @@ AI_SECURITY_KEYWORDS = {
     "agent",
     "提示词",
     "模型",
+    "国产模型",
+    "机器人",
     "mythos",
 }
 AI_SECURITY_GUARD_KEYWORDS = {
@@ -370,7 +376,7 @@ def _is_ai_security_context(title: str, author: str) -> bool:
         return True
     if "安全" in author:
         return True
-    if "大模型" in title or "ai" in title or "人工智能" in title:
+    if "大模型" in title or "ai" in title or "人工智能" in title or "模型" in title or "机器人" in title:
         return True
     return False
 

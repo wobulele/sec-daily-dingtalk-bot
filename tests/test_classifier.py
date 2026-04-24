@@ -30,9 +30,10 @@ def test_classifier_marks_ai_security_articles() -> None:
     assert decision.category == Category.AI_SECURITY
 
 
-def test_classifier_drops_generic_ai_procurement_articles() -> None:
+def test_classifier_keeps_generic_ai_procurement_articles() -> None:
     decision = classify_article(build_article("国务院：支持采购大模型、智能体服务", author="智探AI应用"))
-    assert decision.keep is False
+    assert decision.keep is True
+    assert decision.category == Category.AI_SECURITY
 
 
 def test_classifier_does_not_keep_irrelevant_title_only_because_author_looks_security_related() -> None:
@@ -84,5 +85,23 @@ def test_classifier_routes_security_tool_collections_to_tools_before_vulnerabili
 
 def test_classifier_routes_generic_large_model_articles_to_ai_security() -> None:
     decision = classify_article(build_article("小米大模型杀疯了：开源全球第一，还不要钱", author="数世咨询"))
+    assert decision.keep is True
+    assert decision.category == Category.AI_SECURITY
+
+
+def test_classifier_routes_domestic_model_articles_to_ai_security() -> None:
+    decision = classify_article(build_article("国产模型 Number One 是谁？", author="数世咨询"))
+    assert decision.keep is True
+    assert decision.category == Category.AI_SECURITY
+
+
+def test_classifier_routes_bof_plugin_release_to_tools() -> None:
+    decision = classify_article(build_article("丝滑绕过卡巴斯基、Defender！自研 BOF 维权插件 ccschtask 发布"))
+    assert decision.keep is True
+    assert decision.category == Category.TOOLS
+
+
+def test_classifier_routes_robot_application_articles_to_ai_security() -> None:
+    decision = classify_article(build_article("五一抢票崩溃？郑州东站的机器人 “新员工” 已经上岗了！"))
     assert decision.keep is True
     assert decision.category == Category.AI_SECURITY
