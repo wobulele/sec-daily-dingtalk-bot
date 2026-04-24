@@ -81,6 +81,18 @@ THREAT_KEYWORDS = {
     "威胁通缉令",
     "样本",
 }
+POLICY_CONTEXT_KEYWORDS = {
+    "会议",
+    "法案",
+    "通过",
+    "众议院",
+    "参议院",
+    "议会",
+    "内阁",
+    "白宫",
+    "政府",
+    "国家情报会议",
+}
 VULNERABILITY_KEYWORDS = {
     "cve-",
     "ghsa-",
@@ -134,6 +146,10 @@ TOOLS_KEYWORDS = {
     "浏览器保存的登录密码",
     "助手",
     "问题解决",
+    "可视化工具集",
+    "资产测绘",
+    "fofa",
+    "nuclei",
 }
 AI_SECURITY_KEYWORDS = {
     "ai",
@@ -287,9 +303,15 @@ def classify_article(article: Article, minimax_client: MiniMaxClient | None = No
     if _is_non_security_ai(title):
         return ClassificationDecision(False, None, "non-security-ai")
 
+    if _is_policy_context(title):
+        return ClassificationDecision(True, Category.POLICY, "policy-context-keyword")
+
     if any(keyword in title for keyword in AI_SECURITY_KEYWORDS):
-        if any(keyword in title for keyword in AI_SECURITY_GUARD_KEYWORDS) or "安全" in author:
+        if _is_ai_security_context(title, author):
             return ClassificationDecision(True, Category.AI_SECURITY, "ai-security-keyword")
+
+    if _is_tool_context(title):
+        return ClassificationDecision(True, Category.TOOLS, "tools-context-keyword")
 
     for keyword in OFFENSIVE_OVERRIDE_KEYWORDS:
         if keyword in title:
@@ -333,6 +355,24 @@ def normalize_text(text: str) -> str:
     normalized = text.lower()
     normalized = re.sub(r"\s+", "", normalized)
     return normalized
+
+
+def _is_policy_context(title: str) -> bool:
+    return any(keyword in title for keyword in POLICY_CONTEXT_KEYWORDS)
+
+
+def _is_tool_context(title: str) -> bool:
+    return any(keyword in title for keyword in TOOLS_KEYWORDS)
+
+
+def _is_ai_security_context(title: str, author: str) -> bool:
+    if any(keyword in title for keyword in AI_SECURITY_GUARD_KEYWORDS):
+        return True
+    if "安全" in author:
+        return True
+    if "大模型" in title or "ai" in title or "人工智能" in title:
+        return True
+    return False
 
 
 def _is_non_security_ai(title: str) -> bool:

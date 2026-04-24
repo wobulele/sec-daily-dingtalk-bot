@@ -68,3 +68,21 @@ def test_classifier_keeps_ai_assistant_tool_article() -> None:
     decision = classify_article(build_article("OpenClaw 适配普通人的纯免费Ai助手 | 家庭版介绍— 由浅到深的问题解决"))
     assert decision.keep is True
     assert decision.category == Category.AI_SECURITY
+
+
+def test_classifier_routes_intelligence_bills_to_policy() -> None:
+    decision = classify_article(build_article("日本「国家情报会议」创设法案众议院通过", author="情报分析师"))
+    assert decision.keep is True
+    assert decision.category == Category.POLICY
+
+
+def test_classifier_routes_security_tool_collections_to_tools_before_vulnerability() -> None:
+    decision = classify_article(build_article("网络安全可视化工具集 |  FOFA 资产测绘爬取与 Nuclei 漏洞扫描"))
+    assert decision.keep is True
+    assert decision.category == Category.TOOLS
+
+
+def test_classifier_routes_generic_large_model_articles_to_ai_security() -> None:
+    decision = classify_article(build_article("小米大模型杀疯了：开源全球第一，还不要钱", author="数世咨询"))
+    assert decision.keep is True
+    assert decision.category == Category.AI_SECURITY
