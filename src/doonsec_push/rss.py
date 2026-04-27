@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import hashlib
+import sys
+import time
 from datetime import datetime
+from urllib.error import URLError
 from urllib.parse import urlsplit, urlunsplit
 from urllib.request import Request, urlopen
 from xml.etree import ElementTree
@@ -11,12 +14,33 @@ from .models import Article
 
 
 USER_AGENT = "Mozilla/5.0 (compatible; DoonsecDingTalkBot/1.0)"
+DEFAULT_FETCH_ATTEMPTS = 4
+DEFAULT_FETCH_TIMEOUT = 45
+DEFAULT_RETRY_DELAYS = (10, 30, 60)
 
 
-def fetch_rss_text(url: str) -> str:
+def fetch_rss_text(url: str, attempts: int = DEFAULT_FETCH_ATTEMPTS, timeout: int = DEFAULT_FETCH_TIMEOUT) -> str:
     request = Request(url, headers={"User-Agent": USER_AGENT})
-    with urlopen(request, timeout=30) as response:
-        return response.read().decode("utf-8")
+    last_error: Exception | None = None
+
+    for attempt in range(1, attempts + 1):
+        try:
+            with urlopen(request, timeout=timeout) as response:
+                return response.read().decode("utf-8")
+        except (TimeoutError, URLError, OSError) as exc:
+            last_error = exc
+            if attempt == attempts:
+                break
+
+            delay = DEFAULT_RETRY_DELAYS[min(attempt - 1, len(DEFAULT_RETRY_DELAYS) - 1)]
+            print(
+                f"RSS fetch failed on attempt {attempt}/{attempts}: {exc}. Retrying in {delay}s.",
+                file=sys.stderr,
+                flush=True,
+            )
+            time.sleep(delay)
+
+    raise RuntimeError(f"RSS fetch failed after {attempts} attempts: {last_error}") from last_error
 
 
 def normalize_link(link: str) -> str:
