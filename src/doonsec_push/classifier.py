@@ -63,8 +63,24 @@ DROP_KEYWORDS = {
 }
 
 NON_SECURITY_AI_KEYWORDS = {"融资", "算力", "支付", "招聘", "服务项目"}
+AI_PRIORITY_KEYWORDS = {
+    "ai",
+    "claude",
+    "mythos",
+    "skill",
+    "mcp",
+    "人工智能",
+    "大模型",
+    "智能体",
+    "提示词",
+    "模型",
+    "国产模型",
+    "机器人",
+}
 THREAT_KEYWORDS = {
     "apt",
+    "unc",
+    "seedworm",
     "勒索",
     "攻击",
     "钓鱼",
@@ -80,11 +96,18 @@ THREAT_KEYWORDS = {
     "朝鲜it工人",
     "威胁通缉令",
     "样本",
+    "恶意软件",
+    "被黑客入侵",
+    "植入后门",
+    "植入持久化",
+    "攻击全球组织",
+    "银狐源码",
+    "cisa披露",
+    "firestarter",
 }
 POLICY_CONTEXT_KEYWORDS = {
     "会议",
     "法案",
-    "通过",
     "众议院",
     "参议院",
     "议会",
@@ -92,6 +115,25 @@ POLICY_CONTEXT_KEYWORDS = {
     "白宫",
     "政府",
     "国家情报会议",
+    "行业资讯",
+    "中标",
+    "采购项目",
+    "发布会",
+    "通知",
+    "遴选结果",
+    "管理办法",
+    "负面清单",
+    "排名出炉",
+    "收官",
+    "第一名",
+    "每周网安态势概览",
+    "入职条件",
+    "这一天",
+    "八部门",
+    "联合发布",
+    "日媒评论",
+    "你会怎么选",
+    "送外卖",
 }
 VULNERABILITY_KEYWORDS = {
     "cve-",
@@ -108,6 +150,15 @@ VULNERABILITY_KEYWORDS = {
     "远程代码执行",
     "exploit",
 }
+VULNERABILITY_PRIORITY_KEYWORDS = {
+    "cve-",
+    "ghsa-",
+    "漏洞预警",
+    "文件上传漏洞",
+    "信息泄露漏洞",
+    "远程代码执行漏洞",
+    "远程代码执行",
+}
 OFFENSIVE_OVERRIDE_KEYWORDS = {
     "漏洞挖掘",
     "漏洞案例",
@@ -117,6 +168,12 @@ OFFENSIVE_OVERRIDE_KEYWORDS = {
     "静态网站中存在",
     "src",
     "众测",
+    "实战复盘",
+    "mitreatt&ck实战",
+    "对手模拟",
+    "kali",
+    "kali200条命令",
+    "攻击链路",
 }
 OFFENSIVE_KEYWORDS = {
     "渗透",
@@ -309,31 +366,34 @@ def classify_article(article: Article, minimax_client: MiniMaxClient | None = No
     if _is_non_security_ai(title):
         return ClassificationDecision(False, None, "non-security-ai")
 
+    if _is_ai_priority_context(title, author):
+        return ClassificationDecision(True, Category.AI_SECURITY, "ai-priority-keyword")
+
     if _is_policy_context(title):
         return ClassificationDecision(True, Category.POLICY, "policy-context-keyword")
-
-    if any(keyword in title for keyword in AI_SECURITY_KEYWORDS):
-        if _is_ai_security_context(title, author):
-            return ClassificationDecision(True, Category.AI_SECURITY, "ai-security-keyword")
-
-    if _is_tool_context(title):
-        return ClassificationDecision(True, Category.TOOLS, "tools-context-keyword")
 
     for keyword in OFFENSIVE_OVERRIDE_KEYWORDS:
         if keyword in title:
             return ClassificationDecision(True, Category.OFFENSIVE, "offensive-override-keyword")
 
-    for keyword in OFFENSIVE_KEYWORDS:
+    for keyword in VULNERABILITY_PRIORITY_KEYWORDS:
         if keyword in title:
-            return ClassificationDecision(True, Category.OFFENSIVE, "offensive-keyword")
-
-    for keyword in VULNERABILITY_KEYWORDS:
-        if keyword in title:
-            return ClassificationDecision(True, Category.VULNERABILITY, "vulnerability-keyword")
+            return ClassificationDecision(True, Category.VULNERABILITY, "vulnerability-priority-keyword")
 
     for keyword in THREAT_KEYWORDS:
         if keyword in title:
             return ClassificationDecision(True, Category.THREAT_INTEL, "threat-keyword")
+
+    for keyword in OFFENSIVE_KEYWORDS:
+        if keyword in title:
+            return ClassificationDecision(True, Category.OFFENSIVE, "offensive-keyword")
+
+    if _is_tool_context(title):
+        return ClassificationDecision(True, Category.TOOLS, "tools-context-keyword")
+
+    for keyword in VULNERABILITY_KEYWORDS:
+        if keyword in title:
+            return ClassificationDecision(True, Category.VULNERABILITY, "vulnerability-keyword")
 
     for keyword in TOOLS_KEYWORDS:
         if keyword in title:
@@ -371,12 +431,18 @@ def _is_tool_context(title: str) -> bool:
     return any(keyword in title for keyword in TOOLS_KEYWORDS)
 
 
+def _is_ai_priority_context(title: str, author: str) -> bool:
+    if not any(keyword in title for keyword in AI_PRIORITY_KEYWORDS):
+        return False
+    return _is_ai_security_context(title, author)
+
+
 def _is_ai_security_context(title: str, author: str) -> bool:
     if any(keyword in title for keyword in AI_SECURITY_GUARD_KEYWORDS):
         return True
     if "安全" in author:
         return True
-    if "大模型" in title or "ai" in title or "人工智能" in title or "模型" in title or "机器人" in title:
+    if any(keyword in title for keyword in AI_PRIORITY_KEYWORDS):
         return True
     return False
 
