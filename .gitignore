@@ -10,3 +10,4 @@ htmlcov/
 .env
 logs/
 *.log
+data/sent_state.json
